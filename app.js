@@ -12,20 +12,10 @@ const server = http.createServer((req, res) => {
     res.write(`Server Port: ${server.address().port}\n`);
     res.write(`Operating System: ${os.type()} ${os.release()}\n`);
 
-    exec('openssl version', (err, stdout, stderr) => {
-        if (err) {
-            res.write(`Error getting OpenSSL version: ${err.message}\n`);
-            res.end();
-            return;
-        }
-
-        res.write(`OpenSSL Version: ${stdout.trim()}\n`);
-        res.end();
-    });
-
     exec('lsb_release -a', (err, stdout, stderr) => {
         if (err) {
-            console.error(`Error getting Ubuntu version: ${err}`);
+            res.write(`Error getting Ubuntu version: ${err.message}\n`);
+            res.end();
             return;
         }
 
@@ -37,11 +27,12 @@ const server = http.createServer((req, res) => {
             const description = descriptionLine.split(':')[1].trim();
             const version = versionLine.split(':')[1].trim();
 
-            console.log(`Ubuntu Version: ${description} ${version}`);
-            res.write(`Ubuntu Version: ${description} ${version}`);
+            res.write(`Ubuntu Version: ${description} ${version}\n`);
         } else {
-            console.error('Unable to determine Ubuntu version');
+            res.write('Unable to determine Ubuntu version\n');
         }
+
+        res.end();
     });
 });
 
