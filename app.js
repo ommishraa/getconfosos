@@ -10,6 +10,7 @@ const server = http.createServer((req, res) => {
     res.write(`Architecture: ${process.arch}\n`);
     res.write(`Server Address: ${server.address().address}\n`);
     res.write(`Server Port: ${server.address().port}\n`);
+    res.write(`Operating System: ${os.type()} ${os.release()}\n`);
 
     exec('openssl version', (err, stdout, stderr) => {
         if (err) {
