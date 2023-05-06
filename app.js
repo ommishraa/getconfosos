@@ -12,15 +12,35 @@ const server = http.createServer((req, res) => {
     res.write(`Server Port: ${server.address().port}\n`);
     res.write(`Operating System: ${os.type()} ${os.release()}\n`);
 
-    exec('openssl version', (err, stdout, stderr) => {
+    // exec('openssl version', (err, stdout, stderr) => {
+    //     if (err) {
+    //         res.write(`Error getting OpenSSL version: ${err.message}\n`);
+    //         res.end();
+    //         return;
+    //     }
+
+    //     res.write(`OpenSSL Version: ${stdout.trim()}\n`);
+    //     res.end();
+    // });
+
+    exec('lsb_release -a', (err, stdout, stderr) => {
         if (err) {
-            res.write(`Error getting OpenSSL version: ${err.message}\n`);
-            res.end();
+            console.error(`Error getting Ubuntu version: ${err}`);
             return;
         }
 
-        res.write(`OpenSSL Version: ${stdout.trim()}\n`);
-        res.end();
+        const lines = stdout.split('\n');
+        const descriptionLine = lines.find(line => line.startsWith('Description:'));
+        const versionLine = lines.find(line => line.startsWith('Release:'));
+
+        if (descriptionLine && versionLine) {
+            const description = descriptionLine.split(':')[1].trim();
+            const version = versionLine.split(':')[1].trim();
+
+            console.log(`Ubuntu Version: ${description} ${version}`);
+        } else {
+            console.error('Unable to determine Ubuntu version');
+        }
     });
 });
 
